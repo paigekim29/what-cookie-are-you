@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What Cookie Are You?</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap");
+
+    :root {
+      --ink: #2f221d;
+      --cream: #fffaf0;
+      --paper: #fffdf8;
+      --pink: #ed8f9d;
+      --orange: #df7a47;
+      --yellow: #f4c95d;
+      --sage: #839c79;
+      --line: #e9ddd0;
+      --shadow: 0 22px 60px rgba(75, 46, 31, 0.13);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "DM Sans", sans-serif;
+      background:
+        radial-gradient(circle at 10% 12%, rgba(237, 143, 157, .22) 0 120px, transparent 121px),
+        radial-gradient(circle at 90% 85%, rgba(244, 201, 93, .24) 0 160px, transparent 161px),
+        var(--cream);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .32;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E");
+    }
+
+    .page {
+      width: min(940px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 60px;
+      position: relative;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 38px;
+    }
+
+    .brand {
+      font: 700 1.22rem "Playfair Display", serif;
+      letter-spacing: -.02em;
+    }
+
+    .counter {
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 253, 248, .75);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      align-items: center;
+      gap: 40px;
+      min-height: 520px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 12px;
+      color: var(--orange);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 600px;
+      margin: 0 0 20px;
+      font: 700 clamp(3.3rem, 8vw, 6.4rem)/.92 "Playfair Display", serif;
+      letter-spacing: -.065em;
+    }
+
+    h1 em {
+      color: var(--pink);
+      font-weight: 700;
+    }
+
+    .intro {
+      max-width: 510px;
+      margin: 0 0 30px;
+      color: #715f55;
+      font-size: 1.06rem;
+      line-height: 1.65;
+    }
+
+    button {
+      border: 0;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .primary {
+      padding: 15px 24px;
+      color: white;
+      border-radius: 12px;
+      background: var(--ink);
+      font-weight: 700;
+      box-shadow: 0 10px 24px rgba(47, 34, 29, .18);
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(47, 34, 29, .24);
+    }
+
+    .cookie-scene {
+      position: relative;
+      min-height: 380px;
+      display: grid;
+      place-items: center;
+    }
+
+    .cookie {
+      width: 270px;
+      aspect-ratio: 1;
+      position: relative;
+      border-radius: 48% 52% 45% 55% / 52% 44% 56% 48%;
+      background: #c98245;
+      box-shadow: inset -18px -22px 0 rgba(116, 62, 28, .12), var(--shadow);
+      transform: rotate(-8deg);
+    }
+
+    .chip {
+      width: 25px;
+      aspect-ratio: 1;
+      position: absolute;
+      border-radius: 50%;
+      background: #4d2b24;
+      box-shadow: inset -4px -4px 0 rgba(0, 0, 0, .18);
+    }
+
+    .chip:nth-child(1) { left: 20%; top: 24%; }
+    .chip:nth-child(2) { right: 22%; top: 16%; transform: scale(.75); }
+    .chip:nth-child(3) { left: 45%; top: 40%; transform: scale(1.2); }
+    .chip:nth-child(4) { left: 21%; bottom: 20%; transform: scale(.75); }
+    .chip:nth-child(5) { right: 19%; bottom: 24%; }
+
+    .face {
+      position: absolute;
+      inset: 0;
+      transform: rotate(8deg);
+    }
+
+    .eye {
+      width: 8px;
+      height: 13px;
+      position: absolute;
+      top: 45%;
+      border-radius: 50%;
+      background: #2f221d;
+    }
+
+    .eye.left { left: 39%; }
+    .eye.right { right: 35%; }
+
+    .smile {
+      width: 28px;
+      height: 14px;
+      position: absolute;
+      top: 53%;
+      left: 50%;
+      border-bottom: 3px solid #2f221d;
+      border-radius: 0 0 50% 50%;
+      transform: translateX(-50%);
+    }
+
+    .doodle {
+      position: absolute;
+      color: var(--orange);
+      font: 700 italic 1.05rem "Playfair Display", serif;
+    }
+
+    .doodle.one { top: 8%; right: -5%; transform: rotate(8deg); }
+    .doodle.two { left: -8%; bottom: 10%; transform: rotate(-10deg); }
+
+    .quiz, .result { display: none; }
+
+    .quiz.active, .result.active { display: block; }
+    .hero.hidden { display: none; }
+
+    .progress-track {
+      height: 7px;
+      margin: 5px 0 54px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: #ede3d7;
+    }
+
+    .progress-bar {
+      width: 20%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--pink);
+      transition: width .35s ease;
+    }
+
+    .question-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      animation: rise .45s ease;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .question-number {
+      color: var(--orange);
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 10px 0 28px;
+      font: 700 clamp(2rem, 5vw, 3.3rem)/1.08 "Playfair Display", serif;
+      letter-spacing: -.04em;
+    }
+
+    .answers {
+      display: grid;
+      gap: 11px;
+    }
+
+    .answer {
+      width: 100%;
+      padding: 17px 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: var(--ink);
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: rgba(255, 253, 248, .86);
+      box-shadow: 0 4px 0 rgba(112, 79, 58, .04);
+      transition: transform .18s, border-color .18s, background .18s;
+    }
+
+    .answer:hover {
+      transform: translateX(6px);
+      border-color: var(--pink);
+      background: #fff;
+    }
+
+    .letter {
+      width: 31px;
+      height: 31px;
+      flex: 0 0 31px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #f4ebe1;
+      font-size: .74rem;
+      font-weight: 700;
+    }
+
+    .result-card {
+      max-width: 740px;
+      margin: 20px auto 0;
+      padding: clamp(28px, 6vw, 58px);
+      text-align: center;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: rgba(255, 253, 248, .94);
+      box-shadow: var(--shadow);
+      animation: rise .5s ease;
+    }
+
+    .result-icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #f5dfbd;
+      font-size: 4rem;
+      transform: rotate(-6deg);
+    }
+
+    .result-card h2 { margin-bottom: 14px; }
+
+    .result-description {
+      max-width: 530px;
+      margin: 0 auto 23px;
+      color: #715f55;
+      font-size: 1.03rem;
+      line-height: 1.7;
+    }
+
+    .traits {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 30px;
+    }
+
+    .trait {
+      padding: 8px 13px;
+      border-radius: 99px;
+      background: #f6ece4;
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
+    .secondary {
+      padding: 12px 18px;
+      color: var(--ink);
+      border-bottom: 2px solid var(--ink);
+      background: transparent;
+      font-weight: 700;
+    }
+
+    footer {
+      margin-top: 56px;
+      color: #9a887d;
+      text-align: center;
+      font-size: .75rem;
+    }
+
+    @media (max-width: 720px) {
+      .page { padding-top: 24px; }
+      .hero { grid-template-columns: 1fr; padding-top: 30px; text-align: center; }
+      .intro { margin-left: auto; margin-right: auto; }
+      .cookie-scene { min-height: 300px; }
+      .cookie { width: 220px; }
+      .doodle { display: none; }
+      .progress-track { margin-bottom: 38px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav>
+      <div class="brand">The Cookie Club</div>
+      <div class="counter" id="counter">5 questions · 1 sweet answer</div>
+    </nav>
+
+    <section class="hero" id="hero">
+      <div>
+        <span class="eyebrow">A freshly baked personality quiz</span>
+        <h1>What <em>cookie</em> are you?</h1>
+        <p class="intro">
+          Are you warm and classic, bright and zesty, or secretly a little spicy?
+          Answer five quick questions to discover your cookie personality.
+        </p>
+        <button class="primary" id="startBtn">Take the quiz →</button>
+      </div>
+      <div class="cookie-scene" aria-hidden="true">
+        <span class="doodle one">sweet on the outside</span>
+        <span class="doodle two">soft at heart</span>
+        <div class="cookie">
+          <i class="chip"></i><i class="chip"></i><i class="chip"></i>
+          <i class="chip"></i><i class="chip"></i>
+          <div class="face">
+            <i class="eye left"></i><i class="eye right"></i><i class="smile"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="quiz" id="quiz">
+      <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="question-wrap" id="questionWrap"></div>
+    </section>
+
+    <section class="result" id="result">
+      <div class="result-card">
+        <span class="eyebrow">Your cookie personality is...</span>
+        <div class="result-icon" id="resultIcon"></div>
+        <h2 id="resultTitle"></h2>
+        <p class="result-description" id="resultDescription"></p>
+        <div class="traits" id="traits"></div>
+        <button class="secondary" id="restartBtn">Bake up another result</button>
+      </div>
+    </section>
+
+    <footer>Made with butter, sugar, and a little self-discovery.</footer>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        question: "Your perfect Saturday looks like...",
+        answers: [
+          ["A cozy day with my favorite people", "sugar"],
+          ["Trying a quirky new café or hobby", "snickerdoodle"],
+          ["Movies, blankets, and serious comfort food", "chocolate"],
+          ["An energetic adventure with no set plan", "gingersnap"],
+          ["Sunshine, fresh air, and somewhere beautiful", "lemon"]
+        ]
+      },
+      {
+        question: "Pick the compliment that sounds most like you.",
+        answers: [
+          ["“You make everyone feel welcome.”", "sugar"],
+          ["“You always make things more fun.”", "snickerdoodle"],
+          ["“You are the friend I can always count on.”", "chocolate"],
+          ["“You are bold, honest, and unforgettable.”", "gingersnap"],
+          ["“Your energy lights up the room.”", "lemon"]
+        ]
+      },
+      {
+        question: "When life gets messy, you...",
+        answers: [
+          ["Stay calm and keep things simple", "sugar"],
+          ["Laugh, improvise, and make it work", "snickerdoodle"],
+          ["Call someone I trust and talk it through", "chocolate"],
+          ["Face it head-on—challenge accepted", "gingersnap"],
+          ["Find a fresh perspective and reset", "lemon"]
+        ]
+      },
+      {
+        question: "Choose a color palette for your life.",
+        answers: [
+          ["Soft cream, blush, and sky blue", "sugar"],
+          ["Cinnamon, lavender, and playful pink", "snickerdoodle"],
+          ["Caramel, cocoa, and deep burgundy", "chocolate"],
+          ["Rust, black, and fiery red", "gingersnap"],
+          ["Lemon yellow, crisp white, and leafy green", "lemon"]
+        ]
+      },
+      {
+        question: "What do you bring to your friend group?",
+        answers: [
+          ["A peaceful presence and thoughtful advice", "sugar"],
+          ["Inside jokes and wonderfully chaotic ideas", "snickerdoodle"],
+          ["Loyalty, warmth, and the best snacks", "chocolate"],
+          ["Courage, momentum, and a little mischief", "gingersnap"],
+          ["Optimism, inspiration, and good vibes", "lemon"]
+        ]
+      }
+    ];
+
+    const results = {
+      sugar: {
+        title: "Sugar Cookie",
+        icon: "🍪",
+        description: "Classic in the very best way. You are gentle, dependable, and naturally comforting. People feel at ease around you because you bring a steady sweetness to every room—no extra decoration needed.",
+        traits: ["warm-hearted", "grounded", "thoughtful", "timeless"]
+      },
+      snickerdoodle: {
+        title: "Snickerdoodle",
+        icon: "✨",
+        description: "Sweet, playful, and dusted with just enough weirdness. You are the spontaneous spark in your circle, turning ordinary moments into stories everyone will retell later.",
+        traits: ["whimsical", "fun-loving", "creative", "spontaneous"]
+      },
+      chocolate: {
+        title: "Chocolate Chip Cookie",
+        icon: "🍫",
+        description: "Comforting, beloved, and full of heart. Your loyalty runs deep, your hugs feel like home, and people know they can count on you when life gets a little crumbly.",
+        traits: ["loyal", "cozy", "generous", "trustworthy"]
+      },
+      gingersnap: {
+        title: "Gingersnap",
+        icon: "⚡",
+        description: "Bold with a spicy little kick. You are fearless, direct, and impossible to forget. You meet challenges with energy and inspire others to be braver just by being yourself.",
+        traits: ["bold", "witty", "adventurous", "confident"]
+      },
+      lemon: {
+        title: "Lemon Bar",
+        icon: "🍋",
+        description: "Bright, refreshing, and delightfully unexpected. You find the sunny side without ignoring reality, bringing fresh ideas and uplifting energy wherever you go.",
+        traits: ["optimistic", "fresh", "curious", "radiant"]
+      }
+    };
+
+    let currentQuestion = 0;
+    let scores = {};
+
+    const hero = document.getElementById("hero");
+    const quiz = document.getElementById("quiz");
+    const result = document.getElementById("result");
+    const questionWrap = document.getElementById("questionWrap");
+    const progressBar = document.getElementById("progressBar");
+    const counter = document.getElementById("counter");
+
+    document.getElementById("startBtn").addEventListener("click", startQuiz);
+    document.getElementById("restartBtn").addEventListener("click", startQuiz);
+
+    function startQuiz() {
+      currentQuestion = 0;
+      scores = { sugar: 0, snickerdoodle: 0, chocolate: 0, gingersnap: 0, lemon: 0 };
+      hero.classList.add("hidden");
+      result.classList.remove("active");
+      quiz.classList.add("active");
+      renderQuestion();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderQuestion() {
+      const item = questions[currentQuestion];
+      const letters = ["A", "B", "C", "D", "E"];
+      counter.textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+      progressBar.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+
+      questionWrap.innerHTML = `
+        <div class="question-number">Question ${currentQuestion + 1}</div>
+        <h2>${item.question}</h2>
+        <div class="answers">
+          ${item.answers.map((answer, index) => `
+            <button class="answer" data-cookie="${answer[1]}">
+              <span class="letter">${letters[index]}</span>
+              <span>${answer[0]}</span>
+            </button>
+          `).join("")}
+        </div>
+      `;
+
+      document.querySelectorAll(".answer").forEach(button => {
+        button.addEventListener("click", () => chooseAnswer(button.dataset.cookie));
+      });
+    }
+
+    function chooseAnswer(cookie) {
+      scores[cookie]++;
+      currentQuestion++;
+
+      if (currentQuestion < questions.length) {
+        questionWrap.style.animation = "none";
+        void questionWrap.offsetWidth;
+        questionWrap.style.animation = "rise .45s ease";
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      const highest = Math.max(...Object.values(scores));
+      const tied = Object.keys(scores).filter(key => scores[key] === highest);
+      const winner = tied[Math.floor(Math.random() * tied.length)];
+      const data = results[winner];
+
+      document.getElementById("resultIcon").textContent = data.icon;
+      document.getElementById("resultTitle").textContent = data.title;
+      document.getElementById("resultDescription").textContent = data.description;
+      document.getElementById("traits").innerHTML = data.traits
+        .map(trait => `<span class="trait">${trait}</span>`)
+        .join("");
+
+      quiz.classList.remove("active");
+      result.classList.add("active");
+      counter.textContent = "Fresh from the oven";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  </script>
+</body>
+</html>
